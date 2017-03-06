@@ -1,4 +1,4 @@
-function [pd, fa, targetFoundConf, confSort, indTrue, indFalse] = TigerOneRunEFP(laneTruthFileName, groundTruthFileName, eleFileName, halo, saveOutName, confs, confuserScore, alarmOffset)
+function [pd, fa, targetFoundConf, confSort, indTrue, indFalse] = TigerOneRun(laneTruthFileName, groundTruthFileName, eleFileName, halo, saveOutName, confs, confuserScore, alarmOffset)
     
     maxConf = max(confs);
 %    [targetList,clutterList,~,~,meshTriData,meshTriNormData, meshTriDirData] = ReadTru(groundTruthFileName);
