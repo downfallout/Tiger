@@ -9,10 +9,10 @@ The program takes as input a configuration file name.  This configuration file h
 Halo size in meters
 Offset X Direction, Offset Y Direction
 Target type scoring S1 S2 S3 S4
-Lane boundary file, Lane/Emplacement truth file, alarm file, run name
-Lane boundary file, Lane/Emplacement truth file, alarm file, run name
+Date/Lane boundary file, Date/Emplacement truth file, SystemName/GroupName/Date/alarm file, run name
+Date/Lane boundary file, Date/Emplacement truth file, SystemName/GroupName/Date/alarm file, run name
 ...
-Lane boundary file, Lane/Emplacement truth file, alarm file, run name
+Date/Lane boundary file, Date/Emplacement truth file, SystemName/GroupName/Date/alarm file, run name
 
 
 The "Target type scoring" variables define how target categories are scored. 
@@ -34,3 +34,5 @@ To run the scorer in Matlab use the command,
 To run the scorer in Matlab and store the plots, include a name for the files saved.
 
 [allPD, allFA, allConfsSorted] = Tiger('configFileName', 'saveFileName');
+
+configFileName will have the format: SystemName/GroupName/Date/config file name (i.e. 'Akela\MU\Apr15\configTigerEFPMUAkelaClassifierLane88S.txt')
