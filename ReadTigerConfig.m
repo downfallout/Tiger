@@ -1,4 +1,4 @@
-function [fileNameTiger, numFiles, halo, alarmOffset, targetCategoryScore] = ReadTigerConfigEFP(fileName)
+function [fileNameTiger, numFiles, halo, alarmOffset, targetCategoryScore] = ReadTigerConfig(fileName)
     fid = fopen(fileName);
     
     halo = fscanf(fid,'%f\n',1);
