@@ -43,6 +43,12 @@ function [pd, fa, targetFoundConf, confSort, indTrue, indFalse] = TigerOneRun(la
     
     [targetFound, falseAlarms, targetFoundConf, alarmsToTarget] = ScoreAlarmsTry([alarmData{3} alarmData{2}], alarmData{4}, targetList, confuserScore, halo);
     
+    for i=length(targetList):-1:1
+        if(confuserScore(targetList(i).targetCategory) ~= 0)
+            targetList(i) = [];
+        end
+    end
+    
     trueTargets = false(1,length(targetList));
     for i=1:length(targetList)
         if(confuserScore(targetList(i).targetCategory) == 0)

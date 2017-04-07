@@ -25,13 +25,9 @@ function [targetFound, falseAlarms, targetFoundConf, alarmsToTarget] = ScoreAlar
         targetList(j).index = j;
     end
     
-    if(numPasses > 0)
-        passList(numPasses).index = -1;
-        quadLookup = BuildQuadLookup(data,[targetList passList]);
-    else
-        quadLookup = BuildQuadLookup(data,targetList);
-    end
+    passList(numPasses).index = -1;
     
+    quadLookup = BuildQuadLookup(data,[targetList passList]);
     minX = floor(min(data(1,:)))-2;
     minY = floor(min(data(2,:)))-2;
     maxX = floor(max(data(1,:)))+1;
