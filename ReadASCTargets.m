@@ -32,7 +32,7 @@ while (feof(fd_gt) == 0)
     [buriedDepth,line2] = strtok(line2,[',' ' ']);
     [multiPoint,line2] = strtok(line2,[',' ' ']);
     
-    if(multiPoint == 'P')
+    if(multiPoint == 'V' || multiPoint == 'X')
         [lane,line2] = strtok(line2,[',' ' ']);
         if(strcmp(lane,'start') == 1)
             polyCount = 1;
@@ -102,7 +102,8 @@ for i=1:length(gt)
     switch(gt(i).multiPoint)
         case 'N'
             targetList(ind).rectangle = false;
-            targetList(ind).polygon = false;
+            targetList(ind).concave = false;
+            targetList(ind).convex = false;
             targetList(ind).isWire = false;
             targetList(ind).loc.north = gt(i).north;
             targetList(ind).loc.east = gt(i).east;
@@ -115,7 +116,8 @@ for i=1:length(gt)
             rectJump = 2;
             
             targetList(ind).rectangle = true;
-            targetList(ind).polygon = false;
+            targetList(ind).concave = false;
+            targetList(ind).convex = false;
             
             targetList(ind).isWire = false;
             
@@ -185,8 +187,68 @@ for i=1:length(gt)
             targetList(ind).n1 = targetList(ind).n1/targetList(ind).dist2;
             targetList(ind).n2 = targetList(ind).n2/targetList(ind).dist1;
             
-        case 'P'
-            targetList(ind).polygon = true;
+        case 'V'
+            targetList(ind).concave = true;
+            targetList(ind).convex = false;
+            targetList(ind).rectangle = false;
+            targetList(ind).isWire = false;
+            
+            rectJump = gt(i).numMultiPoint-1;
+
+            targetList(ind).center.north = 0;
+            targetList(ind).center.east = 0;
+            targetList(ind).center.alt = 0;
+            for multipointInd = 0:gt(i).numMultiPoint-1
+                targetList(ind).loc(multipointInd+1).north = gt(i+multipointInd).north;
+                targetList(ind).loc(multipointInd+1).east = gt(i+multipointInd).east;
+                targetList(ind).loc(multipointInd+1).alt = gt(i+multipointInd).alt;
+
+                targetList(ind).center.north = targetList(ind).center.north + gt(i+multipointInd).north;
+                targetList(ind).center.east = targetList(ind).center.east + gt(i+multipointInd).east;
+                targetList(ind).center.alt = targetList(ind).center.alt + gt(i+multipointInd).alt;
+            end
+            
+            northV = zeros(1, gt(i).numMultiPoint);
+            eastV = zeros(1, gt(i).numMultiPoint);
+            
+            for multipointInd = 1:gt(i).numMultiPoint
+                northV(multipointInd) = targetList(ind).loc(multipointInd).north;
+                eastV(multipointInd) = targetList(ind).loc(multipointInd).east;
+            end
+            
+            tri = delaunay(eastV,northV);
+            targetList(ind).n = zeros(3*size(tri,1),2);
+            targetList(ind).dist = zeros(3*size(tri,1),1);
+            
+            targetList(ind).tri = tri;
+            
+            for curTri = 1:size(tri,1)
+                curNormInd = 3*curTri-2;
+                targetList(ind).n(curNormInd,:) = [targetList(ind).loc(tri(curTri,2)).north - targetList(ind).loc(tri(curTri,1)).north, targetList(ind).loc(tri(curTri,2)).east - targetList(ind).loc(tri(curTri,1)).east];
+                targetList(ind).dist(curNormInd) = sqrt(sum(targetList(ind).n(curTri,:).^2));
+                targetList(ind).n(curNormInd,:) = targetList(ind).n(curTri,:)/targetList(ind).dist(multipointInd);
+                curNormInd = 3*curTri-1;
+                targetList(ind).n(curNormInd,:) = [targetList(ind).loc(tri(curTri,3)).north - targetList(ind).loc(tri(curTri,2)).north, targetList(ind).loc(tri(curTri,3)).east - targetList(ind).loc(tri(curTri,2)).east];
+                targetList(ind).dist(curNormInd) = sqrt(sum(targetList(ind).n(curTri,:).^2));
+                targetList(ind).n(curNormInd,:) = targetList(ind).n(curTri,:)/targetList(ind).dist(multipointInd);
+                curNormInd = 3*curTri;
+                targetList(ind).n(curNormInd,:) = [targetList(ind).loc(tri(curTri,1)).north - targetList(ind).loc(tri(curTri,3)).north, targetList(ind).loc(tri(curTri,1)).east - targetList(ind).loc(tri(curTri,3)).east];
+                targetList(ind).dist(curNormInd) = sqrt(sum(targetList(ind).n(curTri,:).^2));
+                targetList(ind).n(curNormInd,:) = targetList(ind).n(curTri,:)/targetList(ind).dist(multipointInd);
+            end
+            
+            multipointInd = gt(i).numMultiPoint;
+            targetList(ind).n(multipointInd,:) = [targetList(ind).loc(1).north - targetList(ind).loc(multipointInd).north, targetList(ind).loc(1).east - targetList(ind).loc(multipointInd).east];
+            targetList(ind).dist(multipointInd) = sqrt(sum(targetList(ind).n(multipointInd,:).^2));
+            targetList(ind).n(multipointInd,:) = targetList(ind).n(multipointInd,:)/targetList(ind).dist(multipointInd);
+            
+            targetList(ind).center.north = targetList(ind).center.north/gt(i).numMultiPoint;
+            targetList(ind).center.east = targetList(ind).center.east/gt(i).numMultiPoint;
+            targetList(ind).center.alt = targetList(ind).center.alt/gt(i).numMultiPoint;
+            
+        case 'X'
+            targetList(ind).concave = false;
+            targetList(ind).convex = true;
             targetList(ind).rectangle = false;
             targetList(ind).isWire = false;
             

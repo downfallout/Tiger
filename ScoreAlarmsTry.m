@@ -1,4 +1,6 @@
 function [targetFound, falseAlarms, targetFoundConf, alarmsToTarget] = ScoreAlarmsTry(alarmLoc, alarmConf, targetList, confuserScore, halo)
+    haloSq = halo*halo;
+    
     s = size(alarmLoc);
     
     numPasses = 0;
@@ -54,42 +56,54 @@ function [targetFound, falseAlarms, targetFoundConf, alarmsToTarget] = ScoreAlar
                 if(dataTemp(j).rectangle)
                     foundTarget = false;
                     
-                    vec = [alarmLoc(i,1) - dataTemp(j).loc(2).east, alarmLoc(i,2) - dataTemp(j).loc(2).north];
-                    dist1 = vec*dataTemp(j).n1';
-                    dist2 = vec*dataTemp(j).n2';
+                    for k=1:1  %Bob: This looks worthless, but it is actually needed to use break in the if statements and still hit the foundtarget block
+                        vec = [alarmLoc(i,1) - dataTemp(j).loc(2).east, alarmLoc(i,2) - dataTemp(j).loc(2).north];
+                        dist1 = vec*dataTemp(j).n1';
+                        dist2 = vec*dataTemp(j).n2';
 
-                    if(dist1 > -halo && dist1 < dataTemp(j).dist1+halo && dist2 > 0 && dist2 < dataTemp(j).dist2)
-                        foundTarget = true;
-                    end
+                        if(dist1 > -halo && dist1 < dataTemp(j).dist1+halo && dist2 > 0 && dist2 < dataTemp(j).dist2)
+                            foundTarget = true;
+                            break;
+                        end
 
 
-                    if(dist2 > -halo && dist2 < dataTemp(j).dist2+halo && dist1 > 0 && dist1 < dataTemp(j).dist1)
-                        foundTarget = true;
-                    end
+                        if(dist2 > -halo && dist2 < dataTemp(j).dist2+halo && dist1 > 0 && dist1 < dataTemp(j).dist1)
+                            foundTarget = true;
+                            break;
+                        end
 
-                    %Test four corners
-                    dist = [dataTemp(j).loc(1).east-alarmLoc(i,1), dataTemp(j).loc(1).north-alarmLoc(i,2)];
-                    dist = sqrt(sum(dist.*dist));
-                    if(dist < halo)
-                        foundTarget = true;
-                    end
+                        %Test four corners
+                        dist = [dataTemp(j).loc(1).east-alarmLoc(i,1), dataTemp(j).loc(1).north-alarmLoc(i,2)];
+%                        dist = sqrt(sum(dist.*dist));
+                        dist = sum(dist.*dist);
+                        if(dist < haloSq)
+                            foundTarget = true;
+                            break;
+                        end
 
-                    dist = [dataTemp(j).loc(2).east-alarmLoc(i,1), dataTemp(j).loc(2).north-alarmLoc(i,2)];
-                    dist = sqrt(sum(dist.*dist));
-                    if(dist < halo)
-                        foundTarget = true;
-                    end
+                        dist = [dataTemp(j).loc(2).east-alarmLoc(i,1), dataTemp(j).loc(2).north-alarmLoc(i,2)];
+%                        dist = sqrt(sum(dist.*dist));
+                        dist = sum(dist.*dist);
+                        if(dist < haloSq)
+                            foundTarget = true;
+                            break;
+                        end
 
-                    dist = [dataTemp(j).loc(3).east-alarmLoc(i,1), dataTemp(j).loc(3).north-alarmLoc(i,2)];
-                    dist = sqrt(sum(dist.*dist));
-                    if(dist < halo)
-                        foundTarget = true;
-                    end
+                        dist = [dataTemp(j).loc(3).east-alarmLoc(i,1), dataTemp(j).loc(3).north-alarmLoc(i,2)];
+%                        dist = sqrt(sum(dist.*dist));
+                        dist = sum(dist.*dist);
+                        if(dist < haloSq)
+                            foundTarget = true;
+                            break;
+                        end
 
-                    dist = [dataTemp(j).loc(4).east-alarmLoc(i,1), dataTemp(j).loc(4).north-alarmLoc(i,2)];
-                    dist = sqrt(sum(dist.*dist));
-                    if(dist < halo)
-                        foundTarget = true;
+                        dist = [dataTemp(j).loc(4).east-alarmLoc(i,1), dataTemp(j).loc(4).north-alarmLoc(i,2)];
+%                        dist = sqrt(sum(dist.*dist));
+                        dist = sum(dist.*dist);
+                        if(dist < haloSq)
+                            foundTarget = true;
+                            break;
+                        end
                     end
                     
                     if(foundTarget)
@@ -109,11 +123,80 @@ function [targetFound, falseAlarms, targetFoundConf, alarmsToTarget] = ScoreAlar
                                 end
                         end
                     end
-                elseif(targetList(j).isWire)
+                elseif(targetList(j).convex)
+                    foundTarget = true;
+                    
+                    for k=1:dataTemp(j).numMultiPoint
+                        vec = [alarmLoc(i,1) - dataTemp(j).loc(2).east, alarmLoc(i,2) - dataTemp(j).loc(2).north];
+                        if(vec*dataTemp(j).n(k,:) < 0)
+                            foundTarget = false;
+                            break;
+                        end
+                    end
+                    
+                    if(foundTarget)
+                        switch(confuserScore(dataTemp(j).targetCategory))
+                            case 0
+                                targetFound(dataTemp(j).index) = true;
+                                if(alarmConf(i) > targetFoundConf(dataTemp(j).index))
+                                    targetFoundConf(dataTemp(j).index) = alarmConf(i);
+                                end
+                                falseAlarms(i) = 0;
+                                alarmsToTarget(i) = dataTemp(j).index;
+                            case 1
+                            case 2
+                                if(falseAlarms(i) == 1)
+                                    falseAlarms(i) = 2;
+                                    alarmsToTarget(i) = -1;
+                                end
+                        end
+                    end
+                elseif(targetList(j).concave)
+                    
+                    for k=1:size(dataTemp(j).tri,1)
+                        foundTarget = true;
+                        
+                        vec = [alarmLoc(i,1) - dataTemp(j).loc(dataTemp(j).tri(k,2)).east, alarmLoc(i,2) - dataTemp(j).loc(dataTemp(j).tri(k,1)).east];
+                        if(vec*dataTemp(j).n(3*k-2,:) < 0)
+                            foundTarget = false;
+                            break;
+                        end
+                        
+                        vec = [alarmLoc(i,1) - dataTemp(j).loc(dataTemp(j).tri(k,3)).east, alarmLoc(i,2) - dataTemp(j).loc(dataTemp(j).tri(k,2)).east];
+                        if(vec*dataTemp(j).n(3*k-1,:) < 0)
+                            foundTarget = false;
+                            break;
+                        end
+                        
+                        vec = [alarmLoc(i,1) - dataTemp(j).loc(dataTemp(j).tri(k,1)).east, alarmLoc(i,2) - dataTemp(j).loc(dataTemp(j).tri(k,3)).east];
+                        if(vec*dataTemp(j).n(3*k,:) < 0)
+                            foundTarget = false;
+                            break;
+                        end
+                    end
+                    
+                    if(foundTarget)
+                        switch(confuserScore(dataTemp(j).targetCategory))
+                            case 0
+                                targetFound(dataTemp(j).index) = true;
+                                if(alarmConf(i) > targetFoundConf(dataTemp(j).index))
+                                    targetFoundConf(dataTemp(j).index) = alarmConf(i);
+                                end
+                                falseAlarms(i) = 0;
+                                alarmsToTarget(i) = dataTemp(j).index;
+                            case 1
+                            case 2
+                                if(falseAlarms(i) == 1)
+                                    falseAlarms(i) = 2;
+                                    alarmsToTarget(i) = -1;
+                                end
+                        end
+                    end
                 else %It's a point target.
                     dist = [dataTemp(j).center.east-alarmLoc(i,1), dataTemp(j).center.north-alarmLoc(i,2)];
-                    dist = sqrt(sum(dist.*dist));
-                    if(dist < halo)
+%                    dist = sqrt(sum(dist.*dist));
+                    dist = sum(dist.*dist);
+                    if(dist < haloSq)
                         switch(confuserScore(dataTemp(j).targetCategory))
                             case 0
                                 targetFound(dataTemp(j).index) = true;

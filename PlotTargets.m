@@ -10,7 +10,7 @@ function PlotTargets(targetList,e,n)
             plot(dat(1,:)-e, dat(2,:)-n,'b');
             hold on;
 %            plot(targetList(ind).center.east-e, targetList(ind).center.north-n,'*b');
-        elseif(targetList(ind).polygon)
+        elseif(targetList(ind).convex || targetList(ind).concave)
             dat = zeros(2, length(targetList(ind).loc)+1);
             for i=1:length(targetList(ind).loc)
                 dat(:,i) = [targetList(ind).loc(i).east; targetList(ind).loc(i).north]; 
