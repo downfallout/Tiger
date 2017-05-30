@@ -24,7 +24,7 @@ S5 = Target like clutter. (Metal car parts, soda can)
 0 = Treat category as true targets.
 1 = Treat category as false alarms.
 2 = Disregard all alarms to targets in this category category.
-Usually this will be 0 1 1 0 0.  If you want to treat target like clutter as false alarms, 0 1 1 0 1.  If you want to disregard target like clutter, 0 1 1 0 2.
+Usually this will be 0 1 1 1 0.  If you want to treat target like clutter as false alarms, 0 1 1 1 1.  If you want to disregard target like clutter, 0 1 1 1 2.
 
 The program takes a second parameter which is the name prefix of saved figures.  If you do not wish to save out the figures, do not pass a second parameter. This is used with "run name" parameter of each line.
 

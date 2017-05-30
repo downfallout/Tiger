@@ -9,6 +9,7 @@ fd_gt=fopen(gt_file,'r');
 
    
 %count=0
+totalInds = 0;
 while (feof(fd_gt) == 0)
 
    line=fgets(fd_gt);
@@ -26,16 +27,43 @@ while (feof(fd_gt) == 0)
     end
 
     if(type(1) == 'L' && type(2) == 'N')
+        totalInds = totalInds+1;
+    end
+end
+
+fseek(fd_gt,0,'bof');
+
+laneMarkers(totalInds).id = [];
+totalInds = 0;
+
+while (feof(fd_gt) == 0)
+
+   line=fgets(fd_gt);
+   if(line(1) == '/' && line(2) == '/')
+       continue;
+   end
+
+    [tnum,line2] = strtok(line,[',' ' ']);
+    [north,line2] = strtok(line2,[',' ' ']);
+    [east,line2] = strtok(line2,[',' ' ']);
+    [alt,line2] = strtok(line2,[',' ' ']);
+    [type,line2] = strtok(line2,[',' ' ']);
+    if(length(type) < 2)
+        continue;
+    end
+
+    if(type(1) == 'L' && type(2) == 'N')
+        totalInds = totalInds+1;
 %        [groundType,line2] = strtok(line2,[',' ' ']);
         [markerType,line2] = strtok(line2,[',' ' ']);
-        ind = length(laneMarkers)+1;
-        laneMarkers(ind).id = str2num(tnum);
-        laneMarkers(ind).center.north = str2num(north);
-        laneMarkers(ind).center.east = str2num(east);
-        laneMarkers(ind).center.alt = str2num(alt);
-        laneMarkers(ind).type = type;
+        
+        laneMarkers(totalInds).id = str2num(tnum);
+        laneMarkers(totalInds).center.north = str2num(north);
+        laneMarkers(totalInds).center.east = str2num(east);
+        laneMarkers(totalInds).center.alt = str2num(alt);
+        laneMarkers(totalInds).type = type;
 %        laneMarkers(ind).groundType = groundType;
-        laneMarkers(ind).markerType = markerType;
+        laneMarkers(totalInds).markerType = markerType;
     end
 end
 

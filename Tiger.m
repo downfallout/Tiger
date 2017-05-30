@@ -230,7 +230,7 @@ function [allPD, allFA, allConfsSorted, targetFoundConf] = Tiger(fileNameConfig,
     clf;
 %    plot(allFA',allPD',mean(allFA,1),mean(allPD,1),'--'); axis([0 max(.000001, max(allFA(:,end))) 0 1]);
     plot(allFA',allPD',mean(allFA,1),mean(allPD,1),'--'); axis([0 .05 0 1]);
-    title(sprintf('ROC Halo:%.2f Target Type Scoring %d %d %d %d',halo, targetCategoryScore(1), targetCategoryScore(2), targetCategoryScore(3), targetCategoryScore(4)))
+    title(sprintf('ROC Halo:%.2f Target Type Scoring %d %d %d %d %d',halo, targetCategoryScore(1), targetCategoryScore(2), targetCategoryScore(3), targetCategoryScore(4), targetCategoryScore(5)))
     xlabel('FAR (Alarms/m^2)');
     ylabel('PD');
     for i=1:size(fileNameTiger{1},1)
