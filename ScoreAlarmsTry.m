@@ -53,6 +53,7 @@ function [targetFound, falseAlarms, targetFoundConf, alarmsToTarget] = ScoreAlar
 
 
             for j=1:length(dataTemp)
+                foundTarget = false;
                 if(dataTemp(j).rectangle)
                     foundTarget = false;
                     
@@ -105,24 +106,6 @@ function [targetFound, falseAlarms, targetFoundConf, alarmsToTarget] = ScoreAlar
                             break;
                         end
                     end
-                    
-                    if(foundTarget)
-                        switch(confuserScore(dataTemp(j).targetCategory))
-                            case 0
-                                targetFound(dataTemp(j).index) = true;
-                                if(alarmConf(i) > targetFoundConf(dataTemp(j).index))
-                                    targetFoundConf(dataTemp(j).index) = alarmConf(i);
-                                end
-                                falseAlarms(i) = 0;
-                                alarmsToTarget(i) = dataTemp(j).index;
-                            case 1
-                            case 2
-                                if(falseAlarms(i) == 1)
-                                    falseAlarms(i) = 2;
-                                    alarmsToTarget(i) = -1;
-                                end
-                        end
-                    end
                 elseif(targetList(j).convex)
                     foundTarget = true;
                     
@@ -131,24 +114,6 @@ function [targetFound, falseAlarms, targetFoundConf, alarmsToTarget] = ScoreAlar
                         if(vec*dataTemp(j).n(k,:)' < -halo) %scholl
                             foundTarget = false;
                             break;
-                        end
-                    end
-                    
-                    if(foundTarget)
-                        switch(confuserScore(dataTemp(j).targetCategory))
-                            case 0
-                                targetFound(dataTemp(j).index) = true;
-                                if(alarmConf(i) > targetFoundConf(dataTemp(j).index))
-                                    targetFoundConf(dataTemp(j).index) = alarmConf(i);
-                                end
-                                falseAlarms(i) = 0;
-                                alarmsToTarget(i) = dataTemp(j).index;
-                            case 1
-                            case 2
-                                if(falseAlarms(i) == 1)
-                                    falseAlarms(i) = 2;
-                                    alarmsToTarget(i) = -1;
-                                end
                         end
                     end
                 elseif(targetList(j).concave)
@@ -175,44 +140,30 @@ function [targetFound, falseAlarms, targetFoundConf, alarmsToTarget] = ScoreAlar
                             break;
                         end
                     end
-                    
-                    if(foundTarget)
-                        switch(confuserScore(dataTemp(j).targetCategory))
-                            case 0
-                                targetFound(dataTemp(j).index) = true;
-                                if(alarmConf(i) > targetFoundConf(dataTemp(j).index))
-                                    targetFoundConf(dataTemp(j).index) = alarmConf(i);
-                                end
-                                falseAlarms(i) = 0;
-                                alarmsToTarget(i) = dataTemp(j).index;
-                            case 1
-                            case 2
-                                if(falseAlarms(i) == 1)
-                                    falseAlarms(i) = 2;
-                                    alarmsToTarget(i) = -1;
-                                end
-                        end
-                    end
                 else %It's a point target.
                     dist = [dataTemp(j).center.east-alarmLoc(i,1), dataTemp(j).center.north-alarmLoc(i,2)];
 %                    dist = sqrt(sum(dist.*dist));
                     dist = sum(dist.*dist);
                     if(dist < haloSq)
-                        switch(confuserScore(dataTemp(j).targetCategory))
-                            case 0
-                                targetFound(dataTemp(j).index) = true;
-                                if(alarmConf(i) > targetFoundConf(dataTemp(j).index))
-                                    targetFoundConf(dataTemp(j).index) = alarmConf(i);
-                                end
-                                falseAlarms(i) = 0;
-                                alarmsToTarget(i) = dataTemp(j).index;
-                            case 1
-                            case 2
-                                if(falseAlarms(i) == 1)
-                                    falseAlarms(i) = 2;
-                                    alarmsToTarget(i) = -1;
-                                end
-                        end
+                        foundTarget = true;
+                    end
+                end
+                    
+                if(foundTarget)
+                    switch(confuserScore(dataTemp(j).targetCategory))
+                        case 0
+                            targetFound(dataTemp(j).index) = true;
+                            if(alarmConf(i) > targetFoundConf(dataTemp(j).index))
+                                targetFoundConf(dataTemp(j).index) = alarmConf(i);
+                            end
+                            falseAlarms(i) = 0;
+                            alarmsToTarget(i) = dataTemp(j).index;
+                        case 1
+                        case 2
+                            if(falseAlarms(i) == 1)
+                                falseAlarms(i) = 2;
+                                alarmsToTarget(i) = -1;
+                            end
                     end
                 end
             end
