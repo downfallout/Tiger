@@ -127,8 +127,8 @@ function [targetFound, falseAlarms, targetFoundConf, alarmsToTarget] = ScoreAlar
                     foundTarget = true;
                     
                     for k=1:dataTemp(j).numMultiPoint
-                        vec = [alarmLoc(i,1) - dataTemp(j).loc(2).east, alarmLoc(i,2) - dataTemp(j).loc(2).north];
-                        if(vec*dataTemp(j).n(k,:) < 0)
+                        vec = [alarmLoc(i,1) - dataTemp(j).loc(k).east, alarmLoc(i,2) - dataTemp(j).loc(k).north];
+                        if(vec*dataTemp(j).n(k,:)' < -halo) %scholl
                             foundTarget = false;
                             break;
                         end
@@ -157,20 +157,21 @@ function [targetFound, falseAlarms, targetFoundConf, alarmsToTarget] = ScoreAlar
                         foundTarget = true;
                         
                         vec = [alarmLoc(i,1) - dataTemp(j).loc(dataTemp(j).tri(k,2)).east, alarmLoc(i,2) - dataTemp(j).loc(dataTemp(j).tri(k,1)).east];
-                        if(vec*dataTemp(j).n(3*k-2,:) < 0)
+                        if(vec*dataTemp(j).n(3*k-2,:)' < -halo)
                             foundTarget = false;
-                            break;
                         end
                         
                         vec = [alarmLoc(i,1) - dataTemp(j).loc(dataTemp(j).tri(k,3)).east, alarmLoc(i,2) - dataTemp(j).loc(dataTemp(j).tri(k,2)).east];
-                        if(vec*dataTemp(j).n(3*k-1,:) < 0)
+                        if(vec*dataTemp(j).n(3*k-1,:)' < -halo)
                             foundTarget = false;
-                            break;
                         end
                         
                         vec = [alarmLoc(i,1) - dataTemp(j).loc(dataTemp(j).tri(k,1)).east, alarmLoc(i,2) - dataTemp(j).loc(dataTemp(j).tri(k,3)).east];
-                        if(vec*dataTemp(j).n(3*k,:) < 0)
+                        if(vec*dataTemp(j).n(3*k,:)' < -halo)
                             foundTarget = false;
+                        end
+                        
+                        if(foundTarget)
                             break;
                         end
                     end
