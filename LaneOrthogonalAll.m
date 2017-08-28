@@ -32,12 +32,12 @@ function laneOrthog = LaneOrthogonalAll(data, meshTriData, meshTriNormData, mesh
             foundPoint = false;
         
             for i=1:3:size(dataTemp,1)
-                di = point - dataTemp(i,:);
+                di = point - dataTemp(i,1:2);
 
                 if(di*normTemp(i,:)' > 0)
-                    di = point - dataTemp(i+1,:);
+                    di = point - dataTemp(i+1,1:2);
                     if(di*normTemp(i+1,:)' > 0)
-                        di = point - dataTemp(i+2,:);
+                        di = point - dataTemp(i+2,1:2);
                         if(di*normTemp(i+2,:)' > 0)
                             laneOrthog(j,:) = reshape(meshTriDirData(indTemp(i):indTemp(i)+1,:)', 1, 4);
                             foundPoint = true;
@@ -52,9 +52,9 @@ function laneOrthog = LaneOrthogonalAll(data, meshTriData, meshTriNormData, mesh
                 %It's not inside any of the triangles.  Find which one is closest.
                 %I need to make this more robust
                 for i=1:3:size(dataTemp,1)
-                    di1 = point - dataTemp(i,:);
-                    di2 = point - dataTemp(i+1,:);
-                    di3 = point - dataTemp(i+2,:);
+                    di1 = point - dataTemp(i,1:2);
+                    di2 = point - dataTemp(i+1,1:2);
+                    di3 = point - dataTemp(i+2,1:2);
 
                     if((di1*normTemp(i,:)' > 0) + (di2*normTemp(i+1,:)' > 0) + (di3*normTemp(i+2,:)' > 0) == 2)
                         laneOrthog(j,:) = reshape(meshTriDirData(indTemp(i):indTemp(i)+1,:)', 1, 4);

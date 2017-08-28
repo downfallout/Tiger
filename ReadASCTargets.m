@@ -32,7 +32,9 @@ while (feof(fd_gt) == 0)
     [buriedDepth,line2] = strtok(line2,[',' ' ']);
     [multiPoint,line2] = strtok(line2,[',' ' ']);
     
-    if(multiPoint == 'V' || multiPoint == 'X')
+    ind = length(gt)+1;
+    
+    if(~isempty(multiPoint) && (strcmp(multiPoint,'V') || strcmp(multiPoint, 'X')))
         [lane,line2] = strtok(line2,[',' ' ']);
         line2 = strtrim(line2); %kw
         if(strcmp(line2,'start') == 1)  %kw
@@ -44,11 +46,11 @@ while (feof(fd_gt) == 0)
             polyCount = polyCount+1;
         end
     else
+        gt(ind).numMultiPoint = 0;
         [lane,line2] = strtok(line2,[',' ' ']);
     end
     
     
-    ind = length(gt)+1;
 %    gt(ind).id = str2num(tnum);
     gt(ind).id = tnum;
     gt(ind).north = str2num(north);
@@ -58,7 +60,11 @@ while (feof(fd_gt) == 0)
     gt(ind).buriedDepth = str2num(buriedDepth);
     gt(ind).multiPoint = multiPoint;
     gt(ind).lane = lane;
-    gt(ind).targetCategory = str2num(tnum(8));
+    if(length(tnum) >= 8)
+        gt(ind).targetCategory = str2num(tnum(8));
+    else
+        gt(ind).targetCategory = 0;
+    end
     if(0)
 %    if(~isempty(strfind(gt(ind).type, 'EFP')))
         gt(ind).diameter = str2num(gt(ind).type(9:10));
@@ -284,6 +290,18 @@ for i=1:length(gt)
             targetList(ind).center.east = targetList(ind).center.east/gt(i).numMultiPoint;
             targetList(ind).center.alt = targetList(ind).center.alt/gt(i).numMultiPoint;
             
+        otherwise
+            targetList(ind).rectangle = false;
+            targetList(ind).concave = false;
+            targetList(ind).convex = false;
+            targetList(ind).isWire = false;
+            targetList(ind).loc.north = gt(i).north;
+            targetList(ind).loc.east = gt(i).east;
+            targetList(ind).loc.alt = gt(i).alt;
+            targetList(ind).center.north = gt(i).north;
+            targetList(ind).center.east = gt(i).east;
+            targetList(ind).center.alt = gt(i).alt;
+            targetList(ind).rectangle = false;
     end
     
 end

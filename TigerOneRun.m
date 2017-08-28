@@ -8,8 +8,8 @@ function [pd, fa, targetFoundConf, confSort, indTrue, indFalse] = TigerOneRun(la
     
     totalArea = 0;
     for i=1:3:size(meshTriData,1)
-        tempVec1 = [meshTriData(i+1,:)-meshTriData(i,:) 0];
-        tempVec2 = [meshTriData(i+2,:)-meshTriData(i,:) 0];
+        tempVec1 = [meshTriData(i+1,1:2)-meshTriData(i,1:2) 0];
+        tempVec2 = [meshTriData(i+2,1:2)-meshTriData(i,1:2) 0];
 
         totalArea = totalArea + max(cross(tempVec1,tempVec2))/2;
     end

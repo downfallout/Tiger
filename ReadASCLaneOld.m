@@ -81,7 +81,7 @@ loop = true;
 for i=1:length(laneMarkers)
     if(~isempty(strfind(laneMarkers(i).markerType, 'LL')))
         numMarkersLeft = numMarkersLeft+1;
-    	markersLeft(numMarkersLeft,:) = [laneMarkers(i).center.east laneMarkers(i).center.north laneMarkers(i).center.alt];
+    	markersLeft(numMarkersLeft,:) = [laneMarkers(i).center.east laneMarkers(i).center.north];
     elseif(~isempty(strfind(laneMarkers(i).markerType, 'LR')))
         if(firstRight)
             if(~isempty(strfind(laneMarkers(i).markerType, 'BOLR')))
@@ -94,7 +94,7 @@ for i=1:length(laneMarkers)
         
         numMarkersRight = numMarkersRight+1;
         
-        markersRight(numMarkersRight,:) = [laneMarkers(i).center.east laneMarkers(i).center.north laneMarkers(i).center.alt];
+        markersRight(numMarkersRight,:) = [laneMarkers(i).center.east laneMarkers(i).center.north];
     end
 end
 
@@ -123,9 +123,9 @@ if(~isempty(markersRight))
     isRightMarker(1:size(markersRight,1)) = 1;
 
         angles = zeros(1,length(markersInd));
-        tempVec1 = markersAll(markersInd(2),1:2) - markersAll(markersInd(1),1:2);
+        tempVec1 = markersAll(markersInd(2),:) - markersAll(markersInd(1),:);
         tempVec1 = [tempVec1/norm(tempVec1) 0];
-        tempVec2 = markersAll(markersInd(end),1:2) - markersAll(markersInd(1),1:2);
+        tempVec2 = markersAll(markersInd(end),:) - markersAll(markersInd(1),:);
         tempVec2 = [tempVec2/norm(tempVec2) 0];
         if(max(cross(tempVec1,tempVec2)) > 0)
             angles(1) = dot(tempVec1,tempVec2);
@@ -134,9 +134,9 @@ if(~isempty(markersRight))
         end
 
         for i=2:length(markersInd)-1
-            tempVec1 = markersAll(markersInd(i+1),1:2) - markersAll(markersInd(i),1:2);
+            tempVec1 = markersAll(markersInd(i+1),:) - markersAll(markersInd(i),:);
             tempVec1 = [tempVec1/norm(tempVec1) 0];
-            tempVec2 = markersAll(markersInd(i-1),1:2) - markersAll(markersInd(i),1:2);
+            tempVec2 = markersAll(markersInd(i-1),:) - markersAll(markersInd(i),:);
             tempVec2 = [tempVec2/norm(tempVec2) 0];
             if(max(cross(tempVec1,tempVec2)) > 0)
                 angles(i) = dot(tempVec1,tempVec2);
@@ -145,9 +145,9 @@ if(~isempty(markersRight))
             end
         end
 
-        tempVec1 = markersAll(markersInd(1),1:2) - markersAll(markersInd(end),1:2);
+        tempVec1 = markersAll(markersInd(1),:) - markersAll(markersInd(end),:);
         tempVec1 = [tempVec1/norm(tempVec1) 0];
-        tempVec2 = markersAll(markersInd(end-1),1:2) - markersAll(markersInd(end),1:2);
+        tempVec2 = markersAll(markersInd(end-1),:) - markersAll(markersInd(end),:);
         tempVec2 = [tempVec2/norm(tempVec2) 0];
         if(max(cross(tempVec1,tempVec2)) > 0)
             angles(end) = dot(tempVec1,tempVec2);
@@ -183,7 +183,7 @@ if(~isempty(markersRight))
         if(isRightTemp(1))
             if(isRightTemp(2))
                 %Right Side 1 2
-                di = markersAll(ind2,1:2) - markersAll(ind1,1:2);
+                di = markersAll(ind2,:) - markersAll(ind1,:);
                 di = di/norm(di);
                 meshTriDirData(end+1,:) = [di(2) -di(1)];
                 meshTriDirData(end+1,:) = di;
@@ -191,14 +191,14 @@ if(~isempty(markersRight))
             else
                 if(isRightTemp(3))
                     %Right Side 1 3
-                    di = markersAll(ind1,1:2) - markersAll(ind3,1:2);
+                    di = markersAll(ind1,:) - markersAll(ind3,:);
                     di = di/norm(di);
                     meshTriDirData(end+1,:) = [di(2) -di(1)];
                     meshTriDirData(end+1,:) = di;
                     meshTriDirData(end+1,:) = [0 0];
                 else
                     %Left Side 2 3
-                    di = markersAll(ind2,1:2) - markersAll(ind3,1:2);
+                    di = markersAll(ind2,:) - markersAll(ind3,:);
                     di = di/norm(di);
                     meshTriDirData(end+1,:) = [di(2) -di(1)];
                     meshTriDirData(end+1,:) = di;
@@ -209,14 +209,14 @@ if(~isempty(markersRight))
             if(isRightTemp(2))
                 if(isRightTemp(3))
                     %Right Side 2 3
-                    di = markersAll(ind3,1:2) - markersAll(ind2,1:2);
+                    di = markersAll(ind3,:) - markersAll(ind2,:);
                     di = di/norm(di);
                     meshTriDirData(end+1,:) = [di(2) -di(1)];
                     meshTriDirData(end+1,:) = di;
                     meshTriDirData(end+1,:) = [0 0];
                 else
                     %Left Side 1 3
-                    di = markersAll(ind3,1:2) - markersAll(ind1,1:2);
+                    di = markersAll(ind3,:) - markersAll(ind1,:);
                     di = di/norm(di);
                     meshTriDirData(end+1,:) = [di(2) -di(1)];
                     meshTriDirData(end+1,:) = di;
@@ -224,7 +224,7 @@ if(~isempty(markersRight))
                 end
             else
                 %Left Side 1 2
-                di = markersAll(ind1,1:2) - markersAll(ind2,1:2);
+                di = markersAll(ind1,:) - markersAll(ind2,:);
                 di = di/norm(di);
                 meshTriDirData(end+1,:) = [di(2) -di(1)];
                 meshTriDirData(end+1,:) = di;
@@ -237,13 +237,13 @@ if(~isempty(markersRight))
 %        meshTriNormData(end+1,:) = cross([0 0 1], [markersAll(ind1,:) - markersAll(ind3,:) 0]);
         
         %Simplify the cross product
-        di = markersAll(ind2,1:2) - markersAll(ind1,1:2);
+        di = markersAll(ind2,:) - markersAll(ind1,:);
         di = di/norm(di);
         meshTriNormData(end+1,:) = [-di(2) di(1)];
-        di = markersAll(ind3,1:2) - markersAll(ind2,1:2);
+        di = markersAll(ind3,:) - markersAll(ind2,:);
         di = di/norm(di);
         meshTriNormData(end+1,:) = [-di(2) di(1)];
-        di = markersAll(ind1,1:2) - markersAll(ind3,1:2);
+        di = markersAll(ind1,:) - markersAll(ind3,:);
         di = di/norm(di);
         meshTriNormData(end+1,:) = [-di(2) di(1)];
 
@@ -254,9 +254,9 @@ if(~isempty(markersRight))
 
         if(ind == 1)
             tempVec1 = markersAll(markersInd(ind+1),:) - markersAll(markersInd(ind),:);
-            tempVec1 = [tempVec1/norm(tempVec1)];
+            tempVec1 = [tempVec1/norm(tempVec1) 0];
             tempVec2 = markersAll(markersInd(end),:) - markersAll(markersInd(ind),:);
-            tempVec2 = [tempVec2/norm(tempVec2)];
+            tempVec2 = [tempVec2/norm(tempVec2) 0];
             if(max(cross(tempVec1,tempVec2)) > 0)
                 angles(ind) = dot(tempVec1,tempVec2);
             else
@@ -264,9 +264,9 @@ if(~isempty(markersRight))
             end
         elseif(ind == length(angles))
             tempVec1 = markersAll(markersInd(1),:) - markersAll(markersInd(ind),:);
-            tempVec1 = [tempVec1/norm(tempVec1)];
+            tempVec1 = [tempVec1/norm(tempVec1) 0];
             tempVec2 = markersAll(markersInd(ind-1),:) - markersAll(markersInd(ind),:);
-            tempVec2 = [tempVec2/norm(tempVec2)];
+            tempVec2 = [tempVec2/norm(tempVec2) 0];
             if(max(cross(tempVec1,tempVec2)) > 0)
                 angles(ind) = dot(tempVec1,tempVec2);
             else
@@ -274,9 +274,9 @@ if(~isempty(markersRight))
             end
         else
             tempVec1 = markersAll(markersInd(ind+1),:) - markersAll(markersInd(ind),:);
-            tempVec1 = [tempVec1/norm(tempVec1)];
+            tempVec1 = [tempVec1/norm(tempVec1) 0];
             tempVec2 = markersAll(markersInd(ind-1),:) - markersAll(markersInd(ind),:);
-            tempVec2 = [tempVec2/norm(tempVec2)];
+            tempVec2 = [tempVec2/norm(tempVec2) 0];
             if(max(cross(tempVec1,tempVec2)) > 0)
                 angles(ind) = dot(tempVec1,tempVec2);
             else
@@ -292,9 +292,9 @@ if(~isempty(markersRight))
 
         if(ind == 1)
             tempVec1 = markersAll(markersInd(ind+1),:) - markersAll(markersInd(ind),:);
-            tempVec1 = [tempVec1/norm(tempVec1)];
+            tempVec1 = [tempVec1/norm(tempVec1) 0];
             tempVec2 = markersAll(markersInd(end),:) - markersAll(markersInd(ind),:);
-            tempVec2 = [tempVec2/norm(tempVec2)];
+            tempVec2 = [tempVec2/norm(tempVec2) 0];
             if(max(cross(tempVec1,tempVec2)) > 0)
                 angles(ind) = dot(tempVec1,tempVec2);
             else
@@ -302,9 +302,9 @@ if(~isempty(markersRight))
             end
         elseif(ind == length(angles))
             tempVec1 = markersAll(markersInd(1),:) - markersAll(markersInd(ind),:);
-            tempVec1 = [tempVec1/norm(tempVec1)];
+            tempVec1 = [tempVec1/norm(tempVec1) 0];
             tempVec2 = markersAll(markersInd(ind-1),:) - markersAll(markersInd(ind),:);
-            tempVec2 = [tempVec2/norm(tempVec2)];
+            tempVec2 = [tempVec2/norm(tempVec2) 0];
             if(max(cross(tempVec1,tempVec2)) > 0)
                 angles(ind) = dot(tempVec1,tempVec2);
             else
@@ -312,9 +312,9 @@ if(~isempty(markersRight))
             end
         else
             tempVec1 = markersAll(markersInd(ind+1),:) - markersAll(markersInd(ind),:);
-            tempVec1 = [tempVec1/norm(tempVec1)];
+            tempVec1 = [tempVec1/norm(tempVec1) 0];
             tempVec2 = markersAll(markersInd(ind-1),:) - markersAll(markersInd(ind),:);
-            tempVec2 = [tempVec2/norm(tempVec2)];
+            tempVec2 = [tempVec2/norm(tempVec2) 0];
             if(max(cross(tempVec1,tempVec2)) > 0)
                 angles(ind) = dot(tempVec1,tempVec2);
             else
@@ -355,7 +355,7 @@ if(~isempty(markersRight))
     if(isRightTemp(1))
         if(isRightTemp(2))
             %Right Side 1 2
-            di = markersAll(ind2,1:2) - markersAll(ind1,1:2);
+            di = markersAll(ind2,:) - markersAll(ind1,:);
             di = di/norm(di);
             meshTriDirData(end+1,:) = [di(2) -di(1)];
             meshTriDirData(end+1,:) = di;
@@ -363,14 +363,14 @@ if(~isempty(markersRight))
         else
             if(isRightTemp(3))
                 %Right Side 1 3
-                di = markersAll(ind1,1:2) - markersAll(ind3,1:2);
+                di = markersAll(ind1,:) - markersAll(ind3,:);
                 di = di/norm(di);
                 meshTriDirData(end+1,:) = [di(2) -di(1)];
                 meshTriDirData(end+1,:) = di;
                 meshTriDirData(end+1,:) = [0 0];
             else
                 %Left Side 2 3
-                di = markersAll(ind2,1:2) - markersAll(ind3,1:2);
+                di = markersAll(ind2,:) - markersAll(ind3,:);
                 di = di/norm(di);
                 meshTriDirData(end+1,:) = [di(2) -di(1)];
                 meshTriDirData(end+1,:) = di;
@@ -381,14 +381,14 @@ if(~isempty(markersRight))
         if(isRightTemp(2))
             if(isRightTemp(3))
                 %Right Side 2 3
-                di = markersAll(ind3,1:2) - markersAll(ind2,1:2);
+                di = markersAll(ind3,:) - markersAll(ind2,:);
                 di = di/norm(di);
                 meshTriDirData(end+1,:) = [di(2) -di(1)];
                 meshTriDirData(end+1,:) = di;
                 meshTriDirData(end+1,:) = [0 0];
             else
                 %Left Side 1 3
-                di = markersAll(ind3,1:2) - markersAll(ind1,1:2);
+                di = markersAll(ind3,:) - markersAll(ind1,:);
                 di = di/norm(di);
                 meshTriDirData(end+1,:) = [di(2) -di(1)];
                 meshTriDirData(end+1,:) = di;
@@ -396,7 +396,7 @@ if(~isempty(markersRight))
             end
         else
             %Left Side 1 2
-            di = markersAll(ind1,1:2) - markersAll(ind2,1:2);
+            di = markersAll(ind1,:) - markersAll(ind2,:);
             di = di/norm(di);
             meshTriDirData(end+1,:) = [di(2) -di(1)];
             meshTriDirData(end+1,:) = di;
@@ -414,20 +414,20 @@ if(~isempty(markersRight))
 %        meshTriNormData(end+1,:) = cross([0 0 1], [markersAll(ind1,:) - markersAll(ind3,:) 0]);
         
     %Simplify the cross product
-    di = markersAll(ind2,1:2) - markersAll(ind1,1:2);
+    di = markersAll(ind2,:) - markersAll(ind1,:);
     di = di/norm(di);
     meshTriNormData(end+1,:) = [-di(2) di(1)];
-    di = markersAll(ind3,1:2) - markersAll(ind2,1:2);
+    di = markersAll(ind3,:) - markersAll(ind2,:);
     di = di/norm(di);
     meshTriNormData(end+1,:) = [-di(2) di(1)];
-    di = markersAll(ind1,1:2) - markersAll(ind3,1:2);
+    di = markersAll(ind1,:) - markersAll(ind3,:);
     di = di/norm(di);
     meshTriNormData(end+1,:) = [-di(2) di(1)];
 
     totalArea = 0;
     for i=1:3:size(meshTriData,1)
-        tempVec1 = meshTriData(i+1,:)-meshTriData(i,:);
-        tempVec2 = meshTriData(i+2,:)-meshTriData(i,:);
+        tempVec1 = [meshTriData(i+1,:)-meshTriData(i,:) 0];
+        tempVec2 = [meshTriData(i+2,:)-meshTriData(i,:) 0];
 
         totalArea = totalArea + max(cross(tempVec1,tempVec2))/2;
     end
